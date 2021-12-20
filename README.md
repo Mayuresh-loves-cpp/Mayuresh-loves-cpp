@@ -3,6 +3,7 @@
 ### 😅 Noob Software Developer
 ### 😁 Android Custom ROMs user/tester/dev(kinda)
 
+![My Stats](https://github.com/Mayuresh-loves-cpp/github-stats/blob/master/generated/overview.svg)
 <!--
 **Mayuresh-loves-cpp/Mayuresh-loves-cpp** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 
