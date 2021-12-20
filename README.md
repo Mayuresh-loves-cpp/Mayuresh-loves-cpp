@@ -1,8 +1,8 @@
-### Hi there 👋
+## Hi there 👋
 ### 🌱 I’m currently learning things
 ### 😅 Noob Software Developer
 ### 😁 Android Custom ROMs user/tester/dev(kinda)
-# My Stats
+# My Stats 👇
 ![](https://github.com/Mayuresh-loves-cpp/github-stats/blob/master/generated/overview.svg)
 ![](https://github.com/MAyuresh-loves-cpp/github-stats/blob/master/generated/languages.svg)
 <!--
