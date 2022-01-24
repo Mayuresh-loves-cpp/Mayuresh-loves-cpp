@@ -1,11 +1,10 @@
-import React, { Component } from "react";
+import React from "react";
 
-export class Intro extends Component {
-  render() {
-    return (
-      <div>
-        <h1>This is intro component</h1>
-      </div>
-    );
-  }
-}
+export const Intro = () => {
+  return (
+    <div>
+      <h1>Hello</h1>
+      <h1>Welcome to my portfolio</h1>
+    </div>
+  );
+};
