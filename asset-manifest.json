@@ -1,13 +1,14 @@
 {
   "files": {
-    "main.css": "/Mayuresh-loves-cpp/static/css/main.4ce5c43f.css",
-    "main.js": "/Mayuresh-loves-cpp/static/js/main.f17aadfc.js",
+    "main.css": "/Mayuresh-loves-cpp/static/css/main.edff4a43.css",
+    "main.js": "/Mayuresh-loves-cpp/static/js/main.785a6b6b.js",
+    "static/media/icons1.png": "/Mayuresh-loves-cpp/static/media/icons1.8ecb475ab7f169e94339.png",
     "index.html": "/Mayuresh-loves-cpp/index.html",
-    "main.4ce5c43f.css.map": "/Mayuresh-loves-cpp/static/css/main.4ce5c43f.css.map",
-    "main.f17aadfc.js.map": "/Mayuresh-loves-cpp/static/js/main.f17aadfc.js.map"
+    "main.edff4a43.css.map": "/Mayuresh-loves-cpp/static/css/main.edff4a43.css.map",
+    "main.785a6b6b.js.map": "/Mayuresh-loves-cpp/static/js/main.785a6b6b.js.map"
   },
   "entrypoints": [
-    "static/css/main.4ce5c43f.css",
-    "static/js/main.f17aadfc.js"
+    "static/css/main.edff4a43.css",
+    "static/js/main.785a6b6b.js"
   ]
 }
