@@ -4,8 +4,8 @@
 ### 😁 Android Custom ROMs user/tester/dev(kinda)
 [Want to know more about me?](https://telegra.ph/mayuuuuuuuuuuuu12-s-Bio-02-12)
 # My Stats 👇
-![](https://github.com/Mayuresh-loves-cpp/github-stats/blob/master/generated/overview.svg)
-![](https://github.com/MAyuresh-loves-cpp/github-stats/blob/master/generated/languages.svg)
+<!-- ![](https://github.com/Mayuresh-loves-cpp/github-stats/blob/master/generated/overview.svg) -->
+<!-- ![](https://github.com/MAyuresh-loves-cpp/github-stats/blob/master/generated/languages.svg) -->
 
 [![Mayuresh's GitHub stats](https://github-readme-stats.vercel.app/api?username=Mayuresh-loves-cpp)](https://github.com/anuraghazra/github-readme-stats)
 <!--
