@@ -1,6 +1,6 @@
 ## Hi there 👋
 ### 🌱 I’m currently learning things
-### 😅 Noob Software Developer
+### 😅 Software Developer
 ### 😁 Android Custom ROMs user/tester/dev(kinda)
 [Want to know more about me?](https://telegra.ph/mayuuuuuuuuuuuu12-s-Bio-02-12)
 # My Stats 👇
