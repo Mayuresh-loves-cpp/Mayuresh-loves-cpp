@@ -1,30 +1,32 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
   <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+    <button @click="go">Click Here to Animate</button>
+    <div class="block" ref="square"></div>
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
+<script setup>
+import { ref } from "vue";
+import anime from "animejs";
+
+const square = ref();
+
+function go() {
+  console.log("exceuted");
+  anime({ targets: ".block", translateX: 500 });
+}
+console.log(Object.keys(square));
+</script>
+
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+.block {
+  pointer-events: none;
+  position: relative;
+  width: 128px;
+  height: 128px;
+  margin: 1px;
+  background-color: currentColor;
+  font-size: 12px;
+  color: #2c3e50;
 }
 </style>
