@@ -13,6 +13,7 @@
     <!-- <span style="font-size: 20px; white-space: pre;">
       {{ cwd }}{{ currentCommand }}{{ cursor }}
     </span> -->
+    <Intro></Intro>
     <KeepAlive>
       <CommandLine
         v-for="(ele, index) in ttyStack"
@@ -33,8 +34,11 @@
 
 <script setup>
 import { ref, watch, onMounted } from "vue";
-import CommandLine from "./components/CommandLine.vue";
 import anime from "animejs";
+
+// components import
+import CommandLine from "./components/CommandLine.vue";
+import Intro from "./components/Intro.vue";
 
 const keyPressed = ref();
 const ttyStack = ref([]);
@@ -66,6 +70,9 @@ function updateCurrentCommand(key) {
       currentCommand: currentCommand.value,
       cursor: "",
     });
+    if (currentCommand.value == "clear") {
+      ttyStack.value.length = 0;
+    }
     currentCommand.value = "";
   } else {
     currentCommand.value = currentCommand.value + key;
@@ -73,7 +80,7 @@ function updateCurrentCommand(key) {
   // }
 }
 
-const cwd = ref("(home) > ");
+const cwd = ref("home");
 
 const currentCommand = ref("");
 let cursorFlag = true;
@@ -120,7 +127,7 @@ setInterval(() => {
 // }
 </script>
 
-<style >
+<style>
 @import url("https://fonts.googleapis.com/css2?family=VT323&display=swap");
 
 .root {

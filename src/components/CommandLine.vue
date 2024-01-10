@@ -1,7 +1,7 @@
 <template>
   <div>
     <span style="font-size: 20px; white-space: pre">
-      {{ cwd }}{{ currentCommand }}{{ cursor }}
+      [{{ cwd }}] > {{ currentCommand }}{{ cursor }}
     </span>
   </div>
 </template>
