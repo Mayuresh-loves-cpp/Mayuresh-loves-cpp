@@ -2,7 +2,11 @@
   <div>
     <span style="font-size: 20px; white-space: pre">
       [{{ cwd }}] > {{ currentCommand }}{{ cursor }}
+      <div v-if="output != null" class="output">
+      {{ output.stdout }}
+    </div>
     </span>
+    
   </div>
 </template>
 
@@ -17,7 +21,15 @@ defineProps({
   cursor: {
     type: String,
   },
+  output: {
+    type: Object,
+    default: null,
+  },
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.output {
+  white-space: pre-line;
+}
+</style>

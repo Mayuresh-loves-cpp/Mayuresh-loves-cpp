@@ -13,7 +13,7 @@
     <!-- <span style="font-size: 20px; white-space: pre;">
       {{ cwd }}{{ currentCommand }}{{ cursor }}
     </span> -->
-    <Intro></Intro>
+    <!-- <Intro></Intro> -->
     <KeepAlive>
       <CommandLine
         v-for="(ele, index) in ttyStack"
@@ -21,6 +21,7 @@
         :cwd="ele.cwd"
         :current-command="ele.currentCommand"
         :cursor="ele.cursor"
+        :output="ele.output"
       ></CommandLine>
     </KeepAlive>
     <CommandLine
@@ -44,6 +45,9 @@ const keyPressed = ref();
 const ttyStack = ref([]);
 const ttyLine = 0;
 
+const cwd = ref("home");
+const currentCommand = ref("");
+
 onMounted(() => {
   window.addEventListener("keydown", function (ev) {
     keyPressed.value = ev.key;
@@ -51,6 +55,15 @@ onMounted(() => {
     console.log("keydown");
   });
 });
+
+const commandObject = {
+      cwd: cwd.value,
+      currentCommand: currentCommand.value,
+      cursor: "",
+      output: {
+        stdout: "",
+      },
+    };
 
 function updateCurrentCommand(key) {
   console.log(currentCommand.value.slice(0, currentCommand.value.length - 1));
@@ -65,24 +78,23 @@ function updateCurrentCommand(key) {
     // newSpan.innerHTML = "{{ cwd }}{{ currentCommand }}{{ cursor }}";
     // newSpan.setAttribute("style", "font-size: 20px");
     // document.getElementById("root").appendChild(newSpan);
-    ttyStack.value.push({
-      cwd: cwd.value,
-      currentCommand: currentCommand.value,
-      cursor: "",
-    });
-    if (currentCommand.value == "clear") {
+    let [command, ...args] = currentCommand.value.split(" ");
+    
+    if (command == "clear") {
       ttyStack.value.length = 0;
     }
+    if (command == "echo") {
+      commandObject.output.stdout = args[0];
+    }
     currentCommand.value = "";
+    ttyStack.value.push(commandObject);
   } else {
     currentCommand.value = currentCommand.value + key;
   }
   // }
 }
 
-const cwd = ref("home");
 
-const currentCommand = ref("");
 let cursorFlag = true;
 const cursor = ref("");
 setInterval(() => {
@@ -128,12 +140,15 @@ setInterval(() => {
 </script>
 
 <style>
-@import url("https://fonts.googleapis.com/css2?family=VT323&display=swap");
+/* @import url("https://fonts.googleapis.com/css2?family=VT323&display=swap"); */
+@import url("https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap");
 
 .root {
-  font-family: "VT323", monospace;
+  /* font-family: "VT323", monospace; */
+  font-family: "Ubuntu Mono", monospace;
   color: chartreuse;
   background-color: black;
+  padding: 10px;
   /* height: 100vh; */
 }
 
