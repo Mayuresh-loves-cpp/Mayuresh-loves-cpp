@@ -32,6 +32,7 @@
     ></CommandLine>
     <h1>{{ keyPressed }}</h1>
     <!-- <h1>{{ ttyStack }}</h1> -->
+    <!-- <h1>{{ commandHistory }}</h1> -->
   </div>
 </template>
 
@@ -50,6 +51,7 @@ const ttyLine = 0;
 const cwd = ref("home");
 const currentCommand = ref("");
 const commandHistory = ref([]);
+let commandHistoryPointer = -1;
 
 onMounted(() => {
   window.addEventListener("keydown", function (ev) {
@@ -96,8 +98,7 @@ function updateCurrentCommand(key) {
     } else if (command == "whoami") {
       commandObject.output.stdout = "mayuresh";
     } else if (command == "neofetch") {
-      commandObject.output.stdout = 
-`███╗   ███╗ █████╗ ██╗   ██╗██╗   ██╗
+      commandObject.output.stdout = `███╗   ███╗ █████╗ ██╗   ██╗██╗   ██╗
 ████╗ ████║██╔══██╗╚██╗ ██╔╝██║   ██║
 ██╔████╔██║███████║ ╚████╔╝ ██║   ██║
 ██║╚██╔╝██║██╔══██║  ╚██╔╝  ██║   ██║
@@ -110,6 +111,8 @@ function updateCurrentCommand(key) {
 ██╔══██╗██╔══╝  ╚════██║██╔══██║     
 ██║  ██║███████╗███████║██║  ██║     
 ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝`;
+    } else if (command == "history") {
+      commandObject.output.stdout = commandHistory.value.join("\n");
     } else {
       if (!(command == "")) {
         commandObject.output.stdout = `webshell: ${currentCommand.value}: command not found`;
@@ -122,6 +125,25 @@ function updateCurrentCommand(key) {
     if (isPusshableToCommandStack) {
       ttyStack.value.push(commandObject);
     }
+    commandHistoryPointer = -1;
+  } else if (key == "ArrowUp") {
+    if (commandHistoryPointer == -1) {
+      commandHistoryPointer = commandHistory.value.length - 1;
+    } else {
+      if (commandHistoryPointer > 0) {
+        commandHistoryPointer--;
+      }
+    }
+    console.log("commandHistoryPointer", commandHistoryPointer);
+    currentCommand.value = commandHistory.value[commandHistoryPointer];
+  } else if (key == "ArrowDown") {
+    if (!(commandHistoryPointer == -1)) {
+      if (commandHistoryPointer < commandHistory.value.length - 1) {
+        commandHistoryPointer++;
+      }
+    }
+    console.log("commandHistoryPointer", commandHistoryPointer);
+    currentCommand.value = commandHistory.value[commandHistoryPointer];
   } else {
     currentCommand.value = currentCommand.value + key;
   }
