@@ -1,12 +1,9 @@
 <template>
   <div>
-    <span style="font-size: 20px; white-space: pre">
-      [{{ cwd }}] > {{ currentCommand }}{{ cursor }}
-      <div v-if="output != null" class="output">
-      {{ output.stdout }}
-    </div>
+    <span style="font-size: 20px; white-space: pre"
+      >[{{ cwd }}] > {{ command }}{{ cursor }}
+      <pre v-if="output != null" class="">{{ output.stdout }}</pre>
     </span>
-    
   </div>
 </template>
 
@@ -15,7 +12,7 @@ defineProps({
   cwd: {
     type: String,
   },
-  currentCommand: {
+  command: {
     type: String,
   },
   cursor: {
@@ -31,5 +28,6 @@ defineProps({
 <style scoped>
 .output {
   white-space: pre-line;
+  margin: inherit;
 }
 </style>

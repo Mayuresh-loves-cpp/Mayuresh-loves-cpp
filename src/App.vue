@@ -14,22 +14,24 @@
       {{ cwd }}{{ currentCommand }}{{ cursor }}
     </span> -->
     <!-- <Intro></Intro> -->
-    <KeepAlive>
-      <CommandLine
-        v-for="(ele, index) in ttyStack"
-        :key="index"
-        :cwd="ele.cwd"
-        :current-command="ele.currentCommand"
-        :cursor="ele.cursor"
-        :output="ele.output"
-      ></CommandLine>
-    </KeepAlive>
+    <!-- <KeepAlive> -->
+
+    <CommandLine
+      v-for="(ele, index) in ttyStack"
+      :key="index"
+      :cwd="ele.cwd"
+      :command="ele.command"
+      :cursor="ele.cursor"
+      :output="ele.output"
+    ></CommandLine>
+    <!-- </KeepAlive> -->
     <CommandLine
       :cwd="cwd"
-      :current-command="currentCommand"
+      :command="currentCommand"
       :cursor="cursor"
     ></CommandLine>
     <h1>{{ keyPressed }}</h1>
+    <!-- <h1>{{ ttyStack }}</h1> -->
   </div>
 </template>
 
@@ -39,7 +41,7 @@ import anime from "animejs";
 
 // components import
 import CommandLine from "./components/CommandLine.vue";
-import Intro from "./components/Intro.vue";
+// import Intro from "./components/Intro.vue";
 
 const keyPressed = ref();
 const ttyStack = ref([]);
@@ -47,6 +49,7 @@ const ttyLine = 0;
 
 const cwd = ref("home");
 const currentCommand = ref("");
+const commandHistory = ref([]);
 
 onMounted(() => {
   window.addEventListener("keydown", function (ev) {
@@ -56,17 +59,9 @@ onMounted(() => {
   });
 });
 
-const commandObject = {
-      cwd: cwd.value,
-      currentCommand: currentCommand.value,
-      cursor: "",
-      output: {
-        stdout: "",
-      },
-    };
-
 function updateCurrentCommand(key) {
   console.log(currentCommand.value.slice(0, currentCommand.value.length - 1));
+  let isPusshableToCommandStack = true;
   // while (keyHold) {
   if (key === "Backspace") {
     currentCommand.value = currentCommand.value.slice(
@@ -74,26 +69,64 @@ function updateCurrentCommand(key) {
       currentCommand.value.length - 1
     );
   } else if (key == "Enter") {
+    const commandObject = {
+      cwd: cwd.value,
+      command: currentCommand.value,
+      cursor: "",
+      output: {
+        stdout: "",
+      },
+    };
     // const newSpan = document.createElement('span');
     // newSpan.innerHTML = "{{ cwd }}{{ currentCommand }}{{ cursor }}";
     // newSpan.setAttribute("style", "font-size: 20px");
     // document.getElementById("root").appendChild(newSpan);
     let [command, ...args] = currentCommand.value.split(" ");
-    
+
+    // if (command == "") {
+    //   isPusshableToCommandStack = false;
+    // }
     if (command == "clear") {
       ttyStack.value.length = 0;
+      isPusshableToCommandStack = false;
+    } else if (command == "echo") {
+      commandObject.output.stdout = args.join(" ");
+    } else if (command == "pwd") {
+      commandObject.output.stdout = "/root/home";
+    } else if (command == "whoami") {
+      commandObject.output.stdout = "mayuresh";
+    } else if (command == "neofetch") {
+      commandObject.output.stdout = 
+`███╗   ███╗ █████╗ ██╗   ██╗██╗   ██╗
+████╗ ████║██╔══██╗╚██╗ ██╔╝██║   ██║
+██╔████╔██║███████║ ╚████╔╝ ██║   ██║
+██║╚██╔╝██║██╔══██║  ╚██╔╝  ██║   ██║
+██║ ╚═╝ ██║██║  ██║   ██║   ╚██████╔╝
+╚═╝     ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ 
+                                     
+██████╗ ███████╗███████╗██╗  ██╗     
+██╔══██╗██╔════╝██╔════╝██║  ██║     
+██████╔╝█████╗  ███████╗███████║     
+██╔══██╗██╔══╝  ╚════██║██╔══██║     
+██║  ██║███████╗███████║██║  ██║     
+╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝`;
+    } else {
+      if (!(command == "")) {
+        commandObject.output.stdout = `webshell: ${currentCommand.value}: command not found`;
+      }
     }
-    if (command == "echo") {
-      commandObject.output.stdout = args[0];
+    if (!(command == "")) {
+      commandHistory.value.push(command);
     }
     currentCommand.value = "";
-    ttyStack.value.push(commandObject);
+    if (isPusshableToCommandStack) {
+      ttyStack.value.push(commandObject);
+    }
   } else {
     currentCommand.value = currentCommand.value + key;
   }
   // }
 }
-
 
 let cursorFlag = true;
 const cursor = ref("");
@@ -148,7 +181,7 @@ setInterval(() => {
   font-family: "Ubuntu Mono", monospace;
   color: chartreuse;
   background-color: black;
-  padding: 10px;
+  margin: 10px;
   /* height: 100vh; */
 }
 
