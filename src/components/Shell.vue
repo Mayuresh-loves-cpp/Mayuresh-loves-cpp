@@ -1,5 +1,5 @@
 <template>
-  <div class="root" id="root">
+  <div class="root" id="root" contenteditable="true">
     <!-- <button>Click Here to Animate</button> -->
     <!-- <div style="display: flex; height: 100vh">
         <div
@@ -29,6 +29,7 @@
       :cwd="cwd"
       :command="currentCommand"
       :cursor="cursor"
+      ref="editableCommandLine"
     ></CommandLine>
     <h1>{{ keyPressed }}</h1>
     <!-- <h1>{{ ttyStack }}</h1> -->
@@ -43,6 +44,8 @@ import anime from "animejs";
 // components import
 import CommandLine from "./CommandLine.vue";
 // import Intro from "./Intro.vue";
+
+const editableCommandLine = ref(null);
 
 const keyPressed = ref();
 const ttyStack = ref([]);
@@ -60,6 +63,10 @@ onMounted(() => {
     // console.log("keydown");
   });
 });
+
+function openKeyboard() {
+  editableCommandLine.value.focus();
+}
 
 function updateCurrentCommand(key) {
   console.log(currentCommand.value.slice(0, currentCommand.value.length - 1));
@@ -211,6 +218,7 @@ setInterval(() => {
   background-color: black;
   margin: 10px;
   /* height: 100vh; */
+  cursor: pointer;
 }
 
 body {

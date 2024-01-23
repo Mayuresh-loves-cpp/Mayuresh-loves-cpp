@@ -5,8 +5,8 @@ class executable {
   }
 }
 
-const commands = [
-  new executable("whoami", function () {
+export const commands = [
+  new executable("whoami", function (args) {
     return "mayuresh";
   }),
 ];
