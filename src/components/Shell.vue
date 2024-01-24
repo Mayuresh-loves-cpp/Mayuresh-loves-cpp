@@ -41,6 +41,8 @@
 import { ref, watch, onMounted } from "vue";
 import anime from "animejs";
 
+import { validateAndExec } from "../modules/executables/executableCommands.js";
+
 // components import
 import CommandLine from "./CommandLine.vue";
 // import Intro from "./Intro.vue";
@@ -78,54 +80,65 @@ function updateCurrentCommand(key) {
       currentCommand.value.length - 1
     );
   } else if (key == "Enter") {
+    let [command, ...args] = currentCommand.value.split(" ");
+    const output = validateAndExec(command, args);
     const commandObject = {
       cwd: cwd.value,
       command: currentCommand.value,
       cursor: "",
       output: {
-        stdout: "",
+        stdout: output,
       },
     };
-    // const newSpan = document.createElement('span');
-    // newSpan.innerHTML = "{{ cwd }}{{ currentCommand }}{{ cursor }}";
-    // newSpan.setAttribute("style", "font-size: 20px");
-    // document.getElementById("root").appendChild(newSpan);
-    let [command, ...args] = currentCommand.value.split(" ");
+    ttyStack.value.push(commandObject);
+    // const commandObject = {
+    //   cwd: cwd.value,
+    //   command: currentCommand.value,
+    //   cursor: "",
+    //   output: {
+    //     stdout: "",
+    //   },
+    // };
+    //     // const newSpan = document.createElement('span');
+    //     // newSpan.innerHTML = "{{ cwd }}{{ currentCommand }}{{ cursor }}";
+    //     // newSpan.setAttribute("style", "font-size: 20px");
+    //     // document.getElementById("root").appendChild(newSpan);
+    //     let [command, ...args] = currentCommand.value.split(" ");
 
-    // if (command == "") {
-    //   isPusshableToCommandStack = false;
-    // }
-    if (command == "clear") {
-      ttyStack.value.length = 0;
-      isPusshableToCommandStack = false;
-    } else if (command == "echo") {
-      commandObject.output.stdout = args.join(" ");
-    } else if (command == "pwd") {
-      commandObject.output.stdout = "/root/home";
-    } else if (command == "whoami") {
-      commandObject.output.stdout = "mayuresh";
-    } else if (command == "neofetch") {
-      commandObject.output.stdout = `
-███╗   ███╗ █████╗ ██╗   ██╗██╗   ██╗██████╗ ███████╗███████╗██╗  ██╗
-████╗ ████║██╔══██╗╚██╗ ██╔╝██║   ██║██╔══██╗██╔════╝██╔════╝██║  ██║
-██╔████╔██║███████║ ╚████╔╝ ██║   ██║██████╔╝█████╗  ███████╗███████║
-██║╚██╔╝██║██╔══██║  ╚██╔╝  ██║   ██║██╔══██╗██╔══╝  ╚════██║██╔══██║
-██║ ╚═╝ ██║██║  ██║   ██║   ╚██████╔╝██║  ██║███████╗███████║██║  ██║
-╚═╝     ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝`;
-    } else if (command == "history") {
-      commandObject.output.stdout = commandHistory.value.join("\n");
-    } else {
-      if (!(command == "")) {
-        commandObject.output.stdout = `webshell: ${currentCommand.value}: command not found`;
-      }
-    }
-    if (!(command == "")) {
-      commandHistory.value.push(command);
-    }
-    currentCommand.value = "";
-    if (isPusshableToCommandStack) {
-      ttyStack.value.push(commandObject);
-    }
+    //     // if (command == "") {
+    //     //   isPusshableToCommandStack = false;
+    //     // }
+    //     if (command == "clear") {
+    //       ttyStack.value.length = 0;
+    //       isPusshableToCommandStack = false;
+    //     } else if (command == "echo") {
+    //       commandObject.output.stdout = args.join(" ");
+    //     } else if (command == "pwd") {
+    //       commandObject.output.stdout = "/root/home";
+    //     } else if (command == "whoami") {
+    //       commandObject.output.stdout = "mayuresh";
+    //     } else if (command == "neofetch") {
+    //       commandObject.output.stdout = `
+    // ███╗   ███╗ █████╗ ██╗   ██╗██╗   ██╗██████╗ ███████╗███████╗██╗  ██╗
+    // ████╗ ████║██╔══██╗╚██╗ ██╔╝██║   ██║██╔══██╗██╔════╝██╔════╝██║  ██║
+    // ██╔████╔██║███████║ ╚████╔╝ ██║   ██║██████╔╝█████╗  ███████╗███████║
+    // ██║╚██╔╝██║██╔══██║  ╚██╔╝  ██║   ██║██╔══██╗██╔══╝  ╚════██║██╔══██║
+    // ██║ ╚═╝ ██║██║  ██║   ██║   ╚██████╔╝██║  ██║███████╗███████║██║  ██║
+    // ╚═╝     ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝`;
+    //     } else if (command == "history") {
+    //       commandObject.output.stdout = commandHistory.value.join("\n");
+    //     } else {
+    //       if (!(command == "")) {
+    //         commandObject.output.stdout = `webshell: ${currentCommand.value}: command not found`;
+    //       }
+    //     }
+    //     if (!(command == "")) {
+    //       commandHistory.value.push(command);
+    //     }
+    //     currentCommand.value = "";
+    //     if (isPusshableToCommandStack) {
+    //       ttyStack.value.push(commandObject);
+    //     }
     commandHistoryPointer = -1;
   } else if (key == "ArrowUp") {
     let updateFlag = true;
