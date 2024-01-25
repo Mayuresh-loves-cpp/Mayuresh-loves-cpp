@@ -1,5 +1,5 @@
 <template>
-  <div class="root" id="root" contenteditable="true">
+  <div class="root" id="root">
     <!-- <button>Click Here to Animate</button> -->
     <!-- <div style="display: flex; height: 100vh">
         <div
@@ -87,10 +87,16 @@ function updateCurrentCommand(key) {
       command: currentCommand.value,
       cursor: "",
       output: {
-        stdout: output,
+        stdout: output.stdout,
       },
     };
-    ttyStack.value.push(commandObject);
+    if (output.clearConsole) {
+      ttyStack.value.length = 0;
+    } else {
+      ttyStack.value.push(commandObject);
+    }
+    currentCommand.value = "";
+
     // const commandObject = {
     //   cwd: cwd.value,
     //   command: currentCommand.value,
@@ -99,46 +105,46 @@ function updateCurrentCommand(key) {
     //     stdout: "",
     //   },
     // };
-    //     // const newSpan = document.createElement('span');
-    //     // newSpan.innerHTML = "{{ cwd }}{{ currentCommand }}{{ cursor }}";
-    //     // newSpan.setAttribute("style", "font-size: 20px");
-    //     // document.getElementById("root").appendChild(newSpan);
-    //     let [command, ...args] = currentCommand.value.split(" ");
+    // // const newSpan = document.createElement('span');
+    // // newSpan.innerHTML = "{{ cwd }}{{ currentCommand }}{{ cursor }}";
+    // // newSpan.setAttribute("style", "font-size: 20px");
+    // // document.getElementById("root").appendChild(newSpan);
+    // let [command, ...args] = currentCommand.value.split(" ");
 
-    //     // if (command == "") {
-    //     //   isPusshableToCommandStack = false;
-    //     // }
-    //     if (command == "clear") {
-    //       ttyStack.value.length = 0;
-    //       isPusshableToCommandStack = false;
-    //     } else if (command == "echo") {
-    //       commandObject.output.stdout = args.join(" ");
-    //     } else if (command == "pwd") {
-    //       commandObject.output.stdout = "/root/home";
-    //     } else if (command == "whoami") {
-    //       commandObject.output.stdout = "mayuresh";
-    //     } else if (command == "neofetch") {
-    //       commandObject.output.stdout = `
+    // // if (command == "") {
+    // //   isPusshableToCommandStack = false;
+    // // }
+    // if (command == "clear") {
+    //   ttyStack.value.length = 0;
+    //   isPusshableToCommandStack = false;
+    // } else if (command == "echo") {
+    //   commandObject.output.stdout = args.join(" ");
+    // } else if (command == "pwd") {
+    //   commandObject.output.stdout = "/root/home";
+    // } else if (command == "whoami") {
+    //   commandObject.output.stdout = "mayuresh";
+    // } else if (command == "neofetch") {
+    //   commandObject.output.stdout = `
     // ███╗   ███╗ █████╗ ██╗   ██╗██╗   ██╗██████╗ ███████╗███████╗██╗  ██╗
     // ████╗ ████║██╔══██╗╚██╗ ██╔╝██║   ██║██╔══██╗██╔════╝██╔════╝██║  ██║
     // ██╔████╔██║███████║ ╚████╔╝ ██║   ██║██████╔╝█████╗  ███████╗███████║
     // ██║╚██╔╝██║██╔══██║  ╚██╔╝  ██║   ██║██╔══██╗██╔══╝  ╚════██║██╔══██║
     // ██║ ╚═╝ ██║██║  ██║   ██║   ╚██████╔╝██║  ██║███████╗███████║██║  ██║
     // ╚═╝     ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝`;
-    //     } else if (command == "history") {
-    //       commandObject.output.stdout = commandHistory.value.join("\n");
-    //     } else {
-    //       if (!(command == "")) {
-    //         commandObject.output.stdout = `webshell: ${currentCommand.value}: command not found`;
-    //       }
-    //     }
-    //     if (!(command == "")) {
-    //       commandHistory.value.push(command);
-    //     }
-    //     currentCommand.value = "";
-    //     if (isPusshableToCommandStack) {
-    //       ttyStack.value.push(commandObject);
-    //     }
+    // } else if (command == "history") {
+    //   commandObject.output.stdout = commandHistory.value.join("\n");
+    // } else {
+    //   if (!(command == "")) {
+    //     commandObject.output.stdout = `webshell: ${currentCommand.value}: command not found`;
+    //   }
+    // }
+    // if (!(command == "")) {
+    //   commandHistory.value.push(command);
+    // }
+    // currentCommand.value = "";
+    // if (isPusshableToCommandStack) {
+    //   ttyStack.value.push(commandObject);
+    // }
     commandHistoryPointer = -1;
   } else if (key == "ArrowUp") {
     let updateFlag = true;
