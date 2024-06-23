@@ -4,7 +4,7 @@ const RootStructure = {
   type: "dir",
   children: [
     {
-      lable: "home",
+      label: "home",
       name: "home",
       type: "dir",
       children: [
@@ -12,20 +12,26 @@ const RootStructure = {
           label: "mayuresh",
           name: "mayuresh",
           type: "dir",
-          children: [{ label: ".config", name: ".config", type: "file" }],
+          children: [
+            { label: ".config", name: ".config", type: "dir", children: [] },
+            { label: ".bashrc", name: ".bashrc", type: "file", children: null },
+          ],
         },
       ],
     },
+    {
+      label: "bin",
+      name: "bin",
+      type: "dir",
+      children: [],
+    },
+    {
+      label: "etc",
+      label: "etc",
+      type: "dir",
+      children: [],
+    },
   ],
 };
-
-class DirRepresentation {
-  constructor(label, name, type) {
-    this.label = label,
-    this.name = name,
-    this.type = type,
-    this.children = []
-  }
-}
 
 export default RootStructure;

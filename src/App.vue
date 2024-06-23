@@ -1,4 +1,4 @@
-<template contenteditable="true">
+<template>
   <Shell></Shell>
 </template>
 
@@ -8,4 +8,8 @@ import Shell from "./components/Shell.vue";
 console.log(navigator.userAgent);
 </script>
 
-<style scoped></style>
+<style>
+body {
+  background-color: black;
+}
+</style>

@@ -1,6 +1,10 @@
 <template>
   <div>
-    <span style="font-size: 20px; white-space: pre"
+    <span v-if="mobileLayout" style="font-size: 20px; white-space: pre"
+      >[{{ cwd }}] >
+      <pre v-if="output != null" class="">{{ output.stdout }}</pre>
+    </span>
+    <span v-else style="font-size: 20px; white-space: pre"
       >[{{ cwd }}] > {{ command }}{{ cursor }}
       <pre v-if="output != null" class="">{{ output.stdout }}</pre>
     </span>
@@ -21,6 +25,10 @@ defineProps({
   output: {
     type: Object,
     default: null,
+  },
+  mobileLayout: {
+    type: Boolean,
+    required: true,
   },
 });
 </script>
