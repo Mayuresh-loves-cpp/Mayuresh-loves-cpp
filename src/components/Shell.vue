@@ -35,7 +35,7 @@
         :cwd="cwd"
         :command="currentCommand"
         :cursor="cursor"
-        :mobileLayout="isMobileDevice"
+        :mobile-layout="isMobileDevice"
         ref="editableCommandLine"
       >
       </CommandLine>
@@ -65,10 +65,10 @@
       </div>
     </div>
 
-    <div v-if="debugMode">
+    <div v-if="dataStore.debugMode">
       <p>
         <span class="debug-key-text-color">Debug Mode status: </span
-        >{{ debugMode }}
+        >{{ dataStore.debugMode }}
       </p>
       <p>
         <span class="debug-key-text-color">Mobile Device: </span
@@ -98,6 +98,10 @@ import anime from "animejs";
 // primevue component imports
 import Button from "primevue/button";
 
+// components import
+import CommandLine from "./CommandLine.vue";
+// import Intro from "./Intro.vue";
+
 // importing store
 import { envStore } from "../store/main.store.js";
 // import { execStore } from "../store/bin.store.js";
@@ -106,10 +110,6 @@ const dataStore = envStore();
 // const binStore = execStore();
 
 // import { validateAndExec } from "../modules/executables/executableCommands.js";
-
-// components import
-import CommandLine from "./CommandLine.vue";
-// import Intro from "./Intro.vue";
 
 const rootelement = ref();
 
@@ -120,7 +120,7 @@ const mobileShellTextInput = ref("");
 const ttyStack = ref([]);
 const ttyLine = 0;
 
-const cwd = ref("home");
+const cwd = dataStore.getPWD;
 const currentCommand = ref("");
 const commandHistory = ref([]);
 let commandHistoryPointer = -1;
@@ -130,7 +130,7 @@ const regExForMobileDevices =
 
 const isMobileDevice = ref(regExForMobileDevices.test(navigator.userAgent));
 
-const debugMode = ref(true);
+// const debugMode = ref(true);
 
 onMounted(() => {
   window.addEventListener("keydown", function (ev) {
@@ -164,18 +164,21 @@ function updateCurrentCommand(key) {
       currentCommand.value.length - 1
     );
   } else if (key == "Enter") {
-    let [command, ...args] = currentCommand.value.split(" ");
-    const output = dataStore.validateAndExec(command, args);
-    console.log("output", output);
     const commandObject = {
+      // cwd: cwd.value.slice(),
       cwd: cwd.value,
       command: currentCommand.value,
       cursor: "",
       output: {
-        stdout: output.stdout != null ? output.stdout : null,
+        stdout: null,
       },
     };
+    let [command, ...args] = currentCommand.value.split(" ");
+    const output = dataStore.validateAndExec(command, args);
+    console.log("output", output);
+    commandObject.stdout = output.stdout != null ? output.stdout : null;
     console.log(commandObject);
+    console.log("tty stack", ttyStack.value);
     if (output.pushableInHistory) {
       commandHistory.value.push(currentCommand.value);
     }
@@ -266,6 +269,19 @@ function updateCurrentCommand(key) {
     if (updateFlag) {
       currentCommand.value = commandHistory.value[commandHistoryPointer];
     }
+  } else if (
+    [
+      "Alt",
+      "Shift",
+      "Control",
+      "CapsLock",
+      "Tab",
+      "Escape",
+      "Home",
+      "Delete",
+    ].includes(key)
+  ) {
+    // eat 5star do nothing
   } else {
     currentCommand.value = currentCommand.value + key;
   }

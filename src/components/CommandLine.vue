@@ -5,13 +5,18 @@
       <pre v-if="output != null" class="">{{ output.stdout }}</pre>
     </span>
     <span v-else style="font-size: 20px; white-space: pre"
-      >[{{ cwd }}] > {{ command }}{{ cursor }}
+      >[{{ cwd == "/home/mayuresh" ? "~" : cwd }}] >
+      {{ command }}{{ cursor }}
       <pre v-if="output != null" class="">{{ output.stdout }}</pre>
     </span>
   </div>
 </template>
 
 <script setup>
+import { envStore } from "../store/main.store.js";
+
+const dataStore = envStore();
+
 defineProps({
   cwd: {
     type: String,
@@ -29,6 +34,7 @@ defineProps({
   mobileLayout: {
     type: Boolean,
     required: true,
+    default: false,
   },
 });
 </script>

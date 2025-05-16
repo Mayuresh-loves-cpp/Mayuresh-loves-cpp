@@ -1,6 +1,9 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
+// importing directory structure
+import rootStructure from "../modules/dirStructure.js";
+
 class Executable {
   Executable(commandName, executableFunction) {
     this.command = commandName;
@@ -22,10 +25,89 @@ function sendResponse(mapResponse) {
 }
 
 export const envStore = defineStore("env", () => {
-  const pwd = ref("/root/home");
+  // env vars
+  const pwd = ref("/home/mayuresh");
+  const debugMode = ref(true);
+
+  // getter methods
   const getPWD = computed(() => pwd);
+
+  // default exec functions
   function setToDefaultDir() {
-    pwd.value = "~";
+    pwd.value = "/home/mayuresh";
+  }
+
+  function findDirectory(relativeArgPath) {
+    console.log("from change directory function");
+    console.log("relative path:", relativeArgPath);
+    console.log("root structure", rootStructure);
+
+    let pathQueue = null;
+
+    if (relativeArgPath[0] == "/") {
+      // indicates path given is absolute
+      let parsedPath = relativeArgPath.slice(1);
+      pathQueue = parsedPath.split("/");
+      console.log("parsed path queue", pathQueue);
+    } else {
+      let parsedPath = pwd.value.slice(1) + "/" + relativeArgPath;
+      pathQueue = parsedPath.split("/");
+      console.log("parsed path queue", pathQueue);
+    }
+
+    let counter = 1;
+
+    let currentDir = JSON.parse(JSON.stringify(rootStructure));
+    function returnFullPathIfDirectoryExists() {
+      let folder = pathQueue[0];
+      for (let i in currentDir.children) {
+        // console.log(
+        //   "child folders                                                                                                       ",
+        //   currentDir.children
+        // );
+        // console.log("path queue:", pathQueue);
+        // console.log(
+        //   "checking this condition:",
+        //   currentDir.children[i].name,
+        //   "and",
+        //   pathQueue[0]
+        // );
+        if (currentDir.children[i].name == pathQueue[0]) {
+          currentDir = currentDir.children[i];
+          pathQueue.shift();
+          if (pathQueue.length) {
+            return folder + "/" + returnFullPathIfDirectoryExists();
+          } else {
+            return folder;
+          }
+        }
+      }
+
+      // }
+      // console.log("breaking loop");
+      // break;console.log("path queue:", pathQueue);
+      // console.log("last folder");
+      // return folder;
+      // }
+    }
+
+    return "/" + returnFullPathIfDirectoryExists();
+    // pwd.value = "/" + returnFullPathIfDirectoryExists();
+    // console.log("final pwd value", pwd.value);
+  }
+
+  function cdToParentDirtectory() {
+    if (pwd.value != "/") {
+      if (pwd.value.startsWith("/")) {
+        const lastSlashIndex = pwd.value.lastIndexOf("/");
+        if (lastSlashIndex === 0) {
+          // console.log("in root....................");
+          pwd.value = "/";
+          // console.log("pwd", pwd.value);
+        }
+        pwd.value = pwd.value.substring(0, pwd.value.lastIndexOf("/"));
+      }
+    }
   }
 
   const commands = [
@@ -38,8 +120,24 @@ export const envStore = defineStore("env", () => {
     {
       command: "cd",
       exec: function (args) {
-        setToDefaultDir();
+        if (args.length) {
+          if (args[0] == "..") {
+            cdToParentDirtectory();
+          } else if (args[0] == ".") {
+            // eat 5star do nothing
+          } else {
+            var foundPath = findDirectory(args[0]);
+            if (foundPath.includes(args[0])) {
+              pwd.value = foundPath;
+            } else {
+              return `bash: cd: ${args[0]}: No such file or directory`;
+            }
+          }
+        } else {
+          setToDefaultDir();
+        }
         return getPWD;
+        // return;
       },
     },
     {
@@ -50,10 +148,34 @@ export const envStore = defineStore("env", () => {
     },
     {
       command: "history",
-      exec: function(args) {
-        return 
-      }
-     }
+      exec: function (args) {
+        return;
+      },
+    },
+    {
+      command: "ls",
+      exec: function (args) {
+        return ".  ..  sample.txt";
+      },
+    },
+    {
+      command: "pwd",
+      exec: function (args) {
+        return getPWD;
+      },
+    },
+    {
+      command: "debug",
+      exec: function (args) {
+        if (args[0] == "on") {
+          debugMode.value = true;
+        }
+        if (args[0] == "off") {
+          debugMode.value = false;
+        }
+        console.log("debug mode updated:", debugMode);
+      },
+    },
   ];
 
   const shellManipulationCommands = [
@@ -90,5 +212,19 @@ export const envStore = defineStore("env", () => {
       }
     }
   }
-  return { pwd, getPWD, setToDefaultDir, validateAndExec };
+
+  const exposeObject = {
+    // vars
+    pwd,
+    debugMode,
+
+    // getters
+    getPWD,
+
+    // methods
+    setToDefaultDir,
+    validateAndExec,
+  };
+
+  return exposeObject;
 });
