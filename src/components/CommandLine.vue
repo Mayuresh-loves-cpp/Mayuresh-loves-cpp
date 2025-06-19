@@ -1,7 +1,7 @@
 <template>
   <div>
     <span v-if="mobileLayout" style="font-size: 20px; white-space: pre"
-      >[{{ cwd }}] >
+      >[{{ cwd == "/home/mayuresh" ? "~" : cwd  }}] >
       <pre v-if="output != null" class="">{{ output.stdout }}</pre>
     </span>
     <span v-else style="font-size: 20px; white-space: pre"

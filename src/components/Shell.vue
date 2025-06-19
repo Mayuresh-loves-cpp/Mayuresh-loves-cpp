@@ -84,7 +84,7 @@
       <!-- <p>{{ ttyStack }}</p> -->
       <p>
         <span class="debug-key-text-color">command history: </span>
-        {{ commandHistory }}
+        {{ dataStore.commandHistory }}
       </p>
       <p><span class="debug-key-text-color">pwd: </span>{{ dataStore.pwd }}</p>
     </div>
@@ -122,7 +122,7 @@ const ttyLine = 0;
 
 const cwd = dataStore.getPWD;
 const currentCommand = ref("");
-const commandHistory = ref([]);
+// const commandHistory = ref([]);
 let commandHistoryPointer = -1;
 
 const regExForMobileDevices =
@@ -176,11 +176,11 @@ function updateCurrentCommand(key) {
     let [command, ...args] = currentCommand.value.split(" ");
     const output = dataStore.validateAndExec(command, args);
     console.log("output", output);
-    commandObject.stdout = output.stdout != null ? output.stdout : null;
+    commandObject.output.stdout = output.stdout != null ? output.stdout : null;
     console.log(commandObject);
     console.log("tty stack", ttyStack.value);
     if (output.pushableInHistory) {
-      commandHistory.value.push(currentCommand.value);
+      dataStore.commandHistory.push(currentCommand.value);
     }
     if (output.clearConsole) {
       ttyStack.value.length = 0;
@@ -242,8 +242,8 @@ function updateCurrentCommand(key) {
   } else if (key == "ArrowUp") {
     let updateFlag = true;
     if (commandHistoryPointer == -1) {
-      if (commandHistory.value.length > 0) {
-        commandHistoryPointer = commandHistory.value.length - 1;
+      if (dataStore.commandHistory.length > 0) {
+        commandHistoryPointer = dataStore.commandHistory.length - 1;
       } else {
         updateFlag = false;
       }
@@ -254,12 +254,12 @@ function updateCurrentCommand(key) {
     }
     console.log("commandHistoryPointer", commandHistoryPointer);
     if (updateFlag) {
-      currentCommand.value = commandHistory.value[commandHistoryPointer];
+      currentCommand.value = dataStore.commandHistory[commandHistoryPointer];
     }
   } else if (key == "ArrowDown") {
     let updateFlag = true;
     if (!(commandHistoryPointer == -1)) {
-      if (commandHistoryPointer < commandHistory.value.length - 1) {
+      if (commandHistoryPointer < dataStore.commandHistory.length - 1) {
         commandHistoryPointer++;
       }
     } else {
@@ -267,7 +267,7 @@ function updateCurrentCommand(key) {
     }
     console.log("commandHistoryPointer", commandHistoryPointer);
     if (updateFlag) {
-      currentCommand.value = commandHistory.value[commandHistoryPointer];
+      currentCommand.value = dataStore.commandHistory[commandHistoryPointer];
     }
   } else if (
     [

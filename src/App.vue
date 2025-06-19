@@ -1,5 +1,7 @@
 <template>
-  <Shell></Shell>
+  <!-- <h1></h1> -->
+  <!-- <Shell></Shell> -->
+  <RouterView />
 </template>
 
 <script setup>

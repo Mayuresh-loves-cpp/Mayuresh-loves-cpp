@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
+import { useRouter } from "vue-router";
 
 // importing directory structure
 import rootStructure from "../modules/dirStructure.js";
@@ -25,9 +26,13 @@ function sendResponse(mapResponse) {
 }
 
 export const envStore = defineStore("env", () => {
+  // local vars
+  const router = useRouter();
+
   // env vars
   const pwd = ref("/home/mayuresh");
   const debugMode = ref(true);
+  const commandHistory = ref([]);
 
   // getter methods
   const getPWD = computed(() => pwd);
@@ -114,7 +119,14 @@ export const envStore = defineStore("env", () => {
     {
       command: "whoami",
       exec: function (args) {
-        return "mayuresh";
+        const name = `
+███╗   ███╗ █████╗ ██╗   ██╗██╗   ██╗██████╗ ███████╗███████╗██╗  ██╗
+████╗ ████║██╔══██╗╚██╗ ██╔╝██║   ██║██╔══██╗██╔════╝██╔════╝██║  ██║
+██╔████╔██║███████║ ╚████╔╝ ██║   ██║██████╔╝█████╗  ███████╗███████║
+██║╚██╔╝██║██╔══██║  ╚██╔╝  ██║   ██║██╔══██╗██╔══╝  ╚════██║██╔══██║
+██║ ╚═╝ ██║██║  ██║   ██║   ╚██████╔╝██║  ██║███████╗███████║██║  ██║
+╚═╝     ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝`;
+        return name;
       },
     },
     {
@@ -149,12 +161,13 @@ export const envStore = defineStore("env", () => {
     {
       command: "history",
       exec: function (args) {
-        return;
+        return commandHistory.value.join("\n") + "\nhistory";
       },
     },
     {
       command: "ls",
       exec: function (args) {
+        console.log("Executing ls command");
         return ".  ..  sample.txt";
       },
     },
@@ -162,6 +175,15 @@ export const envStore = defineStore("env", () => {
       command: "pwd",
       exec: function (args) {
         return getPWD;
+      },
+    },
+    {
+      command: "cmatrix",
+      exec: function (args) {
+        // return getPWD;
+        router.push({ name: "cmatrix" });
+        // router.replace({ name: "cmatrix" });
+        return;
       },
     },
     {
@@ -217,6 +239,7 @@ export const envStore = defineStore("env", () => {
     // vars
     pwd,
     debugMode,
+    commandHistory,
 
     // getters
     getPWD,
