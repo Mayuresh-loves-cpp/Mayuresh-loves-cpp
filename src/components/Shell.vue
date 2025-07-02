@@ -165,7 +165,6 @@ function updateCurrentCommand(key) {
     );
   } else if (key == "Enter") {
     const commandObject = {
-      // cwd: cwd.value.slice(),
       cwd: cwd.value,
       command: currentCommand.value,
       cursor: "",

@@ -141,6 +141,7 @@ export const envStore = defineStore("env", () => {
             var foundPath = findDirectory(args[0]);
             if (foundPath.includes(args[0])) {
               pwd.value = foundPath;
+              // return null;
             } else {
               return `bash: cd: ${args[0]}: No such file or directory`;
             }
@@ -148,8 +149,8 @@ export const envStore = defineStore("env", () => {
         } else {
           setToDefaultDir();
         }
-        return getPWD;
-        // return;
+        // return getPWD; // this will show getPWD value after every cd command
+        return null;
       },
     },
     {
