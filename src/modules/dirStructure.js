@@ -1,5 +1,5 @@
 const RootStructure = {
-  label: "/",
+  label: "root",
   name: "/",
   type: "dir",
   children: [

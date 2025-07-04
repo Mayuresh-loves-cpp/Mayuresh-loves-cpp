@@ -3,7 +3,7 @@ import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 
 // importing directory structure
-import rootStructure from "../modules/dirStructure.js";
+import RootStructure from "../modules/dirStructure.js";
 
 class Executable {
   Executable(commandName, executableFunction) {
@@ -42,10 +42,11 @@ export const envStore = defineStore("env", () => {
     pwd.value = "/home/mayuresh";
   }
 
+  // utility methods for executables
   function findDirectory(relativeArgPath) {
     console.log("from change directory function");
     console.log("relative path:", relativeArgPath);
-    console.log("root structure", rootStructure);
+    console.log("root structure", RootStructure);
 
     let pathQueue = null;
 
@@ -60,23 +61,10 @@ export const envStore = defineStore("env", () => {
       console.log("parsed path queue", pathQueue);
     }
 
-    let counter = 1;
-
-    let currentDir = JSON.parse(JSON.stringify(rootStructure));
+    let currentDir = JSON.parse(JSON.stringify(RootStructure));
     function returnFullPathIfDirectoryExists() {
       let folder = pathQueue[0];
       for (let i in currentDir.children) {
-        // console.log(
-        //   "child folders                                                                                                       ",
-        //   currentDir.children
-        // );
-        // console.log("path queue:", pathQueue);
-        // console.log(
-        //   "checking this condition:",
-        //   currentDir.children[i].name,
-        //   "and",
-        //   pathQueue[0]
-        // );
         if (currentDir.children[i].name == pathQueue[0]) {
           currentDir = currentDir.children[i];
           pathQueue.shift();
@@ -87,31 +75,47 @@ export const envStore = defineStore("env", () => {
           }
         }
       }
-
-      // }
-      // console.log("breaking loop");
-      // break;console.log("path queue:", pathQueue);
-      // console.log("last folder");
-      // return folder;
-      // }
     }
-
     return "/" + returnFullPathIfDirectoryExists();
-    // pwd.value = "/" + returnFullPathIfDirectoryExists();
-    // console.log("final pwd value", pwd.value);
   }
 
   function cdToParentDirtectory() {
     if (pwd.value != "/") {
       if (pwd.value.startsWith("/")) {
         const lastSlashIndex = pwd.value.lastIndexOf("/");
-        if (lastSlashIndex === 0) {
+        if (lastSlashIndex == 0) {
+          console.log("going to root");
           // console.log("in root....................");
           pwd.value = "/";
           // console.log("pwd", pwd.value);
+        } else {
+          pwd.value = pwd.value.substring(0, pwd.value.lastIndexOf("/"));
         }
-        pwd.value = pwd.value.substring(0, pwd.value.lastIndexOf("/"));
       }
+    }
+  }
+
+  function getCurrentDirectoryContent(root, dirStack) {
+    console.log("next dir", dirStack, root);
+    while (dirStack.length > 0) {
+      console.log("children", root.children, dirStack[0]);
+      for (let i = 0; i < root.children.length; i++) {
+        if (root.children[i].name == dirStack[0]) {
+          root = root.children[i];
+          dirStack.shift();
+          break;
+        }
+      }
+    }
+    return root.children.map((content) => content.name);
+  }
+
+  function listContentsOfDir() {
+    if (pwd.value == "/") {
+      return getCurrentDirectoryContent(RootStructure, []).join("\n");
+    } else {
+      let dirStack = pwd.value.substring(1).split("/");
+      return getCurrentDirectoryContent(RootStructure, dirStack).join("\n");
     }
   }
 
@@ -169,7 +173,10 @@ export const envStore = defineStore("env", () => {
       command: "ls",
       exec: function (args) {
         console.log("Executing ls command");
-        return ".  ..  sample.txt";
+        const op = listContentsOfDir();
+        console.log("final output:", op);
+        return op;
+        // return ".  ..  sample.txt";
       },
     },
     {
