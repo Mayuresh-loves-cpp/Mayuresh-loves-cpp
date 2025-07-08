@@ -107,7 +107,9 @@ export const envStore = defineStore("env", () => {
         }
       }
     }
-    return root.children.map((content) => content.name);
+    return root.children.map((content) =>
+      content.type != "dir" ? content.name : content.name + "/"
+    );
   }
 
   function listContentsOfDir() {
@@ -142,12 +144,16 @@ export const envStore = defineStore("env", () => {
           } else if (args[0] == ".") {
             // eat 5star do nothing
           } else {
-            var foundPath = findDirectory(args[0]);
-            if (foundPath.includes(args[0])) {
-              pwd.value = foundPath;
-              // return null;
+            if (args[0] == "/") {
+              pwd.value = "/";
             } else {
-              return `bash: cd: ${args[0]}: No such file or directory`;
+              var foundPath = findDirectory(args[0]);
+              if (foundPath.includes(args[0])) {
+                pwd.value = foundPath;
+                // return null;
+              } else {
+                return `bash: cd: ${args[0]}: No such file or directory`;
+              }
             }
           }
         } else {
@@ -172,10 +178,7 @@ export const envStore = defineStore("env", () => {
     {
       command: "ls",
       exec: function (args) {
-        console.log("Executing ls command");
-        const op = listContentsOfDir();
-        console.log("final output:", op);
-        return op;
+        return listContentsOfDir();
         // return ".  ..  sample.txt";
       },
     },
@@ -188,7 +191,6 @@ export const envStore = defineStore("env", () => {
     {
       command: "cmatrix",
       exec: function (args) {
-        // return getPWD;
         router.push({ name: "cmatrix" });
         // router.replace({ name: "cmatrix" });
         return;
