@@ -2,8 +2,8 @@
 ### 🌱 I’m currently learning things
 ### 😅 Software Developer
 ### 😁 Android Custom ROMs user/tester/dev(kinda)
-[Want to know more about me?](https://telegra.ph/mayuuuuuuuuuuuu12-s-Bio-02-12)
-# My Stats 👇
+<!-- [Want to know more about me?](https://telegra.ph/mayuuuuuuuuuuuu12-s-Bio-02-12) -->
+<!-- # My Stats 👇b -->
 <!-- ![](https://github.com/Mayuresh-loves-cpp/github-stats/blob/master/generated/overview.svg) -->
 <!-- ![](https://github.com/MAyuresh-loves-cpp/github-stats/blob/master/generated/languages.svg) -->
 
