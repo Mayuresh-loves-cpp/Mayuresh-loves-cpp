@@ -14,4 +14,10 @@ console.log(navigator.userAgent);
 body {
   background-color: black;
 }
+
+textarea {
+  width: max-content;
+  outline: none;
+  border: none;
+}
 </style>

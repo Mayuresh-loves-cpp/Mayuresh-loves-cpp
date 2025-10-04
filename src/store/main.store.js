@@ -2,6 +2,9 @@ import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 
+import { h } from "vue";
+import Neofetch from "../components/Neofetch.vue";
+
 // importing directory structure
 import RootStructure from "../modules/dirStructure.js";
 
@@ -18,6 +21,9 @@ function sendResponse(mapResponse) {
     stdout: null,
     exitcode: 0,
     pushableInHistory: true,
+    isCustomOutput: false,
+    component: null,
+    showInputLine: true,
   };
   for (let i in mapResponse) {
     returnObject[i] = mapResponse[i];
@@ -63,15 +69,27 @@ export const envStore = defineStore("env", () => {
 
     let currentDir = JSON.parse(JSON.stringify(RootStructure));
     function returnFullPathIfDirectoryExists() {
+      console.log("path queue", pathQueue);
       let folder = pathQueue[0];
       for (let i in currentDir.children) {
         if (currentDir.children[i].name == pathQueue[0]) {
           currentDir = currentDir.children[i];
           pathQueue.shift();
+          let returnValue;
           if (pathQueue.length) {
-            return folder + "/" + returnFullPathIfDirectoryExists();
+            let returnPath = returnFullPathIfDirectoryExists();
+            if (returnPath) {
+              returnValue = folder + "/" + returnPath;
+            } else {
+              return folder;
+            }
+            // returnValue = folder + "/" + returnFullPathIfDirectoryExists();
+            console.log("return value top if", returnValue);
+            return returnValue;
           } else {
-            return folder;
+            returnValue = folder == undefined ? "" : folder;
+            console.log("return value bellow if", returnValue);
+            return returnValue;
           }
         }
       }
@@ -81,17 +99,32 @@ export const envStore = defineStore("env", () => {
 
   function cdToParentDirtectory() {
     if (pwd.value != "/") {
-      if (pwd.value.startsWith("/")) {
-        const lastSlashIndex = pwd.value.lastIndexOf("/");
-        if (lastSlashIndex == 0) {
-          console.log("going to root");
-          // console.log("in root....................");
+      // if (pwd.value.startsWith("/")) {
+      // const lastSlashIndex = pwd.value.lastIndexOf("/");
+      // if (lastSlashIndex == 0) {
+      //   console.log("going to root");
+      //   // console.log("in root....................");
+      //   pwd.value = "/";
+      //   // console.log("pwd", pwd.value);
+      // } else {
+      //   pwd.value = pwd.value.substring(0, pwd.value.lastIndexOf("/"));
+      // }
+      // }
+      console.log("pwd before", pwd.value);
+      const pathParts = pwd.value.split("/");
+      if (pathParts.length > 0) {
+        pathParts.shift(); // Remove the first empty part
+        pathParts.pop(); // Remove the last part
+        console.log("path parts after pop", pathParts);
+        if (pathParts.length == 0) {
           pwd.value = "/";
-          // console.log("pwd", pwd.value);
         } else {
-          pwd.value = pwd.value.substring(0, pwd.value.lastIndexOf("/"));
+          pwd.value = pathParts.join("/");
         }
+      } else {
+        pwd.value = "/";
       }
+      console.log("pwd after", pwd.value);
     }
   }
 
@@ -140,6 +173,7 @@ export const envStore = defineStore("env", () => {
       exec: function (args) {
         if (args.length) {
           if (args[0] == "..") {
+            console.log("cd to parent dir");
             cdToParentDirtectory();
           } else if (args[0] == ".") {
             // eat 5star do nothing
@@ -172,7 +206,12 @@ export const envStore = defineStore("env", () => {
     {
       command: "history",
       exec: function (args) {
-        return commandHistory.value.join("\n") + "\nhistory";
+        let output = "";
+        for (let i in commandHistory.value) {
+          output = output + i + " " + commandHistory.value[i] + "\n";
+        }
+        // return commandHistory.value.join("\n") + "\nhistory";
+        return output;
       },
     },
     {
@@ -185,7 +224,7 @@ export const envStore = defineStore("env", () => {
     {
       command: "pwd",
       exec: function (args) {
-        return getPWD;
+        return getPWD.value;
       },
     },
     {
@@ -194,6 +233,17 @@ export const envStore = defineStore("env", () => {
         router.push({ name: "cmatrix" });
         // router.replace({ name: "cmatrix" });
         return;
+      },
+    },
+    {
+      command: "neofetch",
+      exec: function (args) {
+        // router.push({ name: "cmatrix" });
+        // router.replace({ name: "cmatrix" });
+        const customOutput = {
+          component: Neofetch,
+        };
+        return customOutput;
       },
     },
     {
@@ -228,7 +278,32 @@ export const envStore = defineStore("env", () => {
           console.log(commands[i].command, command, i, commands[i]);
           if (commands[i].command == command) {
             console.log("also found command!!");
-            return sendResponse({ stdout: commands[i].exec(args) });
+            const output = commands[i].exec(args);
+            console.log("Command exceuted!!");
+            if (typeof output == "string" || output instanceof String) {
+              console.log("output is string");
+              return sendResponse({
+                stdout: output,
+                isCustomOutput: false,
+                component: undefined,
+              });
+            } else if (output instanceof Object) {
+              if (output.component) {
+                return sendResponse({
+                  stdout: null,
+                  isCustomOutput: true,
+                  component: output.component,
+                });
+              } else {
+                return sendResponse({
+                  stdout: output.stdout,
+                  isCustomOutput: false,
+                  component: undefined,
+                });
+              }
+            } else {
+              return sendResponse({ stdout: output });
+            }
           }
         }
         for (let i in shellManipulationCommands) {

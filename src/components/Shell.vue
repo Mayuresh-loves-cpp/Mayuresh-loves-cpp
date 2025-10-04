@@ -1,4 +1,5 @@
 <template>
+  <!-- <Intro></Intro> -->
   <div
     class="root"
     id="root"
@@ -28,7 +29,15 @@
       :command="ele.command"
       :cursor="ele.cursor"
       :output="ele.output"
-    ></CommandLine>
+      :show-command-input-line="ele.showInputCommandLine"
+    >
+      <template v-slot:custom-output>
+        <component
+          v-if="ele.customComponent.show == true"
+          :is="ele.customComponent.component"
+        ></component>
+      </template>
+    </CommandLine>
     <!-- </KeepAlive> -->
     <div style="display: flex">
       <CommandLine
@@ -53,6 +62,7 @@
           enterKeyHint="go"
           v-model="mobileShellTextInput"
           ref="rootelement"
+          class="mobile-commandline-input"
         />
         <Button
           icon="pi pi-arrow-right"
@@ -92,7 +102,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from "vue";
+import { ref, watch, onMounted, onBeforeMount, shallowRef } from "vue";
 import anime from "animejs";
 
 // primevue component imports
@@ -100,7 +110,7 @@ import Button from "primevue/button";
 
 // components import
 import CommandLine from "./CommandLine.vue";
-// import Intro from "./Intro.vue";
+import Intro from "./Intro.vue";
 
 // importing store
 import { envStore } from "../store/main.store.js";
@@ -131,6 +141,24 @@ const regExForMobileDevices =
 const isMobileDevice = ref(regExForMobileDevices.test(navigator.userAgent));
 
 // const debugMode = ref(true);
+
+onBeforeMount(() => {
+  const commandObject = {
+    cwd: cwd.value,
+    command: "aboutme",
+    cursor: "",
+    isCustomOutput: true,
+    showInputCommandLine: false,
+    output: {
+      stdout: null,
+    },
+    customComponent: {
+      show: true,
+      component: shallowRef(Intro),
+    },
+  };
+  ttyStack.value.push(commandObject);
+});
 
 onMounted(() => {
   window.addEventListener("keydown", function (ev) {
@@ -168,14 +196,27 @@ function updateCurrentCommand(key) {
       cwd: cwd.value,
       command: currentCommand.value,
       cursor: "",
+      showInputCommandLine: true,
       output: {
         stdout: null,
+      },
+      isCustomOutput: false,
+      customComponent: {
+        show: false,
+        component: null,
       },
     };
     let [command, ...args] = currentCommand.value.split(" ");
     const output = dataStore.validateAndExec(command, args);
-    console.log("output", output);
-    commandObject.output.stdout = output.stdout != null ? output.stdout : null;
+    console.log("output of validate exec", output);
+    if (output.isCustomOutput === false) {
+      commandObject.output.stdout = output.stdout != null ? output.stdout : null;
+      commandObject.showInputCommandLine = output.showInputLine;
+    } else {
+      commandObject.isCustomOutput = true;
+      commandObject.customComponent.show = true;
+      commandObject.customComponent.component = output.component;
+    } 
     console.log(commandObject);
     console.log("tty stack", ttyStack.value);
     if (output.pushableInHistory) {
@@ -188,55 +229,6 @@ function updateCurrentCommand(key) {
       ttyStack.value.push(commandObject);
     }
     currentCommand.value = "";
-
-    // const commandObject = {
-    //   cwd: cwd.value,
-    //   command: currentCommand.value,
-    //   cursor: "",
-    //   output: {
-    //     stdout: "",
-    //   },
-    // };
-    // // const newSpan = document.createElement('span');
-    // // newSpan.innerHTML = "{{ cwd }}{{ currentCommand }}{{ cursor }}";
-    // // newSpan.setAttribute("style", "font-size: 20px");
-    // // document.getElementById("root").appendChild(newSpan);
-    // let [command, ...args] = currentCommand.value.split(" ");
-
-    // // if (command == "") {
-    // //   isPusshableToCommandStack = false;
-    // // }
-    // if (command == "clear") {
-    //   ttyStack.value.length = 0;
-    //   isPusshableToCommandStack = false;
-    // } else if (command == "echo") {
-    //   commandObject.output.stdout = args.join(" ");
-    // } else if (command == "pwd") {
-    //   commandObject.output.stdout = "/root/home";
-    // } else if (command == "whoami") {
-    //   commandObject.output.stdout = "mayuresh";
-    // } else if (command == "neofetch") {
-    //   commandObject.output.stdout = `
-    // ███╗   ███╗ █████╗ ██╗   ██╗██╗   ██╗██████╗ ███████╗███████╗██╗  ██╗
-    // ████╗ ████║██╔══██╗╚██╗ ██╔╝██║   ██║██╔══██╗██╔════╝██╔════╝██║  ██║
-    // ██╔████╔██║███████║ ╚████╔╝ ██║   ██║██████╔╝█████╗  ███████╗███████║
-    // ██║╚██╔╝██║██╔══██║  ╚██╔╝  ██║   ██║██╔══██╗██╔══╝  ╚════██║██╔══██║
-    // ██║ ╚═╝ ██║██║  ██║   ██║   ╚██████╔╝██║  ██║███████╗███████║██║  ██║
-    // ╚═╝     ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝`;
-    // } else if (command == "history") {
-    //   commandObject.output.stdout = commandHistory.value.join("\n");
-    // } else {
-    //   if (!(command == "")) {
-    //     commandObject.output.stdout = `webshell: ${currentCommand.value}: command not found`;
-    //   }
-    // }
-    // if (!(command == "")) {
-    //   commandHistory.value.push(command);
-    // }
-    // currentCommand.value = "";
-    // if (isPusshableToCommandStack) {
-    //   ttyStack.value.push(commandObject);
-    // }
     commandHistoryPointer = -1;
   } else if (key == "ArrowUp") {
     let updateFlag = true;
@@ -311,37 +303,6 @@ const enterButtonDesignTree = ref({
     border: { color: "#7fff00" },
   },
 });
-
-// const square = ref(null);
-
-// const isMenuOpen = ref(false);
-
-// watch(isMenuOpen, (newValue) => {
-//   if (newValue) {
-//     expandMenu();
-//   } else {
-//     closeMenu();
-//   }
-// });
-
-// function expandMenu() {
-//   console.log("exceuted");
-//   anime({
-//     targets: square.value,
-//     width: { value: "100%", duration: 300 },
-//     // height: { value: 100, duration: 500 },
-//     easing: "easeOutExpo",
-//   });
-// }
-
-// function closeMenu() {
-//   anime({
-//     targets: square.value,
-//     width: { value: "128px", duration: 500 },
-//     // height: { value: 128, duration: 300 },
-//     easing: "easeOutExpo",
-//   });
-// }
 </script>
 
 <style scoped>
@@ -360,12 +321,12 @@ const enterButtonDesignTree = ref({
 
 .block {
   /* position: relative; */
-  width: 128px;
+  /* width: 128px;
   height: 128px;
   margin: 1px;
   background-color: currentColor;
   font-size: 12px;
-  color: #2c3e50;
+  color: #2c3e50; */
   /* border-radius: 15px; */
 }
 
@@ -376,6 +337,11 @@ input {
   border: none;
   color: chartreuse;
   width: 100%;
+}
+
+.mobile-commandline-input {
+  font-size: 20px;
+  white-space: pre;
 }
 
 .debug-key-text-color {

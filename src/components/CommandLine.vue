@@ -1,14 +1,33 @@
 <template>
   <div>
-    <span v-if="mobileLayout" style="font-size: 20px; white-space: pre"
-      >[{{ cwd == "/home/mayuresh" ? "~" : cwd  }}] >
-      <pre v-if="output != null" class="">{{ output.stdout }}</pre>
-    </span>
-    <span v-else style="font-size: 20px; white-space: pre"
-      >[{{ cwd == "/home/mayuresh" ? "~" : cwd }}] >
-      {{ command }}{{ cursor }}
-      <pre v-if="output != null" class="">{{ output.stdout }}</pre>
-    </span>
+    <!-- for mobile layout -->
+    <div v-if="mobileLayout">
+      <span v-show="showCommandInputLine" class="commandline-input"
+        >[{{ cwd == "/home/mayuresh" ? "~" : cwd }}] >
+      </span>
+      <pre v-if="output != null" class="commandline-output">{{
+        output.stdout
+      }}</pre>
+    </div>
+
+    <!-- for desktop layout -->
+    <div v-else>
+      <span v-show="showCommandInputLine" class="commandline-input"
+        >[{{ cwd == "/home/mayuresh" ? "~" : cwd }}] > {{ command }}{{ cursor }}
+      </span>
+      <pre
+        v-if="output != null && !hasCustomOutput"
+        class="commandline-output"
+        >{{ output.stdout }}</pre
+      >
+      <slot name="custom-output"></slot>
+    </div>
+
+    <!-- <pre
+      v-if="output != null && output == 'aboutme'"
+      class="commandline-output"
+      >{{ output.stdout }}</pre
+    > -->
   </div>
 </template>
 
@@ -33,7 +52,17 @@ defineProps({
   },
   mobileLayout: {
     type: Boolean,
-    required: true,
+    required: false,
+    default: false,
+  },
+  showCommandInputLine: {
+    type: Boolean,
+    // required: false,
+    default: true,
+  },
+  hasCustomOutput: {
+    type: Boolean,
+    required: false,
     default: false,
   },
 });
@@ -43,5 +72,13 @@ defineProps({
 .output {
   white-space: pre-line;
   margin: inherit;
+}
+.commandline-input {
+  font-size: 20px;
+  white-space: pre;
+}
+.commandline-output {
+  font-size: 20px;
+  white-space: pre;
 }
 </style>
