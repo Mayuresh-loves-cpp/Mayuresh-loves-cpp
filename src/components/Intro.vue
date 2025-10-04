@@ -69,7 +69,7 @@ onMounted(() => {
 .intro-text {
   font-size: 20px;
   color: chartreuse;
-  font-family: "Courier New", Courier, monospace;
+  font-family: "Ubuntu Mono", monospace;
   white-space: pre-line; /* Preserve whitespace and allow wrapping */
 }
 </style>
