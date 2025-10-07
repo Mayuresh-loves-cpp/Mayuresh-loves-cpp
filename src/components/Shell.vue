@@ -64,14 +64,15 @@
           ref="rootelement"
           class="mobile-commandline-input"
         />
-        <Button
-          icon="pi pi-arrow-right"
-          style="padding: 2px"
-          size="small"
-          :dt="enterButtonDesignTree"
-          :disabled="mobileShellTextInput.length == ''"
-          @click="onMobileEnterButtonClick"
-        />
+        <div>
+          <Button
+            icon="pi pi-arrow-right"
+            style="padding: 2px"
+            size="small"
+            :dt="enterButtonDesignTree"
+            @click="onMobileEnterButtonClick"
+          />
+        </div>
       </div>
     </div>
 
@@ -99,6 +100,7 @@
       <p><span class="debug-key-text-color">pwd: </span>{{ dataStore.pwd }}</p>
     </div>
   </div>
+  <!-- <Toast /> -->
 </template>
 
 <script setup>
@@ -120,6 +122,9 @@ const dataStore = envStore();
 // const binStore = execStore();
 
 // import { validateAndExec } from "../modules/executables/executableCommands.js";
+// import { useToast } from 'primevue/usetoast'
+
+// const toast = useToast()
 
 const rootelement = ref();
 
@@ -141,6 +146,7 @@ const regExForMobileDevices =
 const isMobileDevice = ref(regExForMobileDevices.test(navigator.userAgent));
 
 // const debugMode = ref(true);
+const sendCommandBtn = ref(null);
 
 onBeforeMount(() => {
   const commandObject = {
@@ -158,6 +164,19 @@ onBeforeMount(() => {
     },
   };
   ttyStack.value.push(commandObject);
+
+  const shown = localStorage.getItem("welcomeToastShown");
+
+  // if (!shown) {
+  //   toast.add({
+  //     severity: 'info',
+  //     summary: 'Welcome 🎉',
+  //     detail: 'This message is shown only once!',
+  //     life: 4000
+  //   })
+
+  //   localStorage.setItem('welcomeToastShown', 'true')
+  // }
 });
 
 onMounted(() => {
@@ -176,7 +195,7 @@ function openKeyboard() {
   editableCommandLine.value.focus();
 }
 
-function onMobileEnterButtonClick() {
+function onMobileEnterButtonClick(event) {
   currentCommand.value = mobileShellTextInput.value;
   updateCurrentCommand("Enter");
   mobileShellTextInput.value = "";
@@ -210,13 +229,14 @@ function updateCurrentCommand(key) {
     const output = dataStore.validateAndExec(command, args);
     console.log("output of validate exec", output);
     if (output.isCustomOutput === false) {
-      commandObject.output.stdout = output.stdout != null ? output.stdout : null;
+      commandObject.output.stdout =
+        output.stdout != null ? output.stdout : null;
       commandObject.showInputCommandLine = output.showInputLine;
     } else {
       commandObject.isCustomOutput = true;
       commandObject.customComponent.show = true;
       commandObject.customComponent.component = output.component;
-    } 
+    }
     console.log(commandObject);
     console.log("tty stack", ttyStack.value);
     if (output.pushableInHistory) {
@@ -340,6 +360,7 @@ input {
 }
 
 .mobile-commandline-input {
+  font-family: "Ubuntu Mono", monospace;
   font-size: 20px;
   white-space: pre;
 }

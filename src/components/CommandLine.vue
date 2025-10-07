@@ -76,9 +76,11 @@ defineProps({
 .commandline-input {
   font-size: 20px;
   white-space: pre;
+  font-family: "Ubuntu Mono", monospace;
 }
 .commandline-output {
   font-size: 20px;
   white-space: pre;
+  font-family: "Ubuntu Mono", monospace;
 }
 </style>
