@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { computed, ref } from "vue";
+import { computed, ref, shallowRef } from "vue";
 import { useRouter } from "vue-router";
 
 import { h } from "vue";
@@ -241,7 +241,7 @@ export const envStore = defineStore("env", () => {
         // router.push({ name: "cmatrix" });
         // router.replace({ name: "cmatrix" });
         const customOutput = {
-          component: Neofetch,
+          component: shallowRef(Neofetch),
         };
         return customOutput;
       },

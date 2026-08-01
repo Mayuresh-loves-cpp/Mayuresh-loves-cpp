@@ -1,27 +1,10 @@
 <template>
-  <!-- <Intro></Intro> -->
   <div
     class="root"
     id="root"
     style="cursor: text"
     @click="isMobileDevice ? showKeyboard() : null"
   >
-    <!-- <button>Click Here to Animate</button> -->
-    <!-- <div style="display: flex; height: 100vh">
-        <div
-          @click.native="console.log('clicked')"
-          @mouseover="isMenuOpen = true"
-          @mouseleave="isMenuOpen = false"
-          class="block"
-          ref="square"
-        ></div>
-      </div> -->
-    <!-- <span style="font-size: 20px; white-space: pre;">
-        {{ cwd }}{{ currentCommand }}{{ cursor }}
-      </span> -->
-    <!-- <Intro></Intro> -->
-    <!-- <KeepAlive> -->
-
     <CommandLine
       v-for="(ele, index) in ttyStack"
       :key="index"
@@ -339,16 +322,16 @@ const enterButtonDesignTree = ref({
   cursor: pointer;
 }
 
-.block {
-  /* position: relative; */
-  /* width: 128px;
+/* .block { */
+/* position: relative; */
+/* width: 128px;
   height: 128px;
   margin: 1px;
   background-color: currentColor;
   font-size: 12px;
   color: #2c3e50; */
-  /* border-radius: 15px; */
-}
+/* border-radius: 15px; */
+/* } */
 
 input {
   /* all: unset; */

@@ -16,4 +16,7 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale; */
+  /* font-size: 20px; */
+  /* white-space: pre; */
+  font-family: "Ubuntu Mono", monospace;
 }
