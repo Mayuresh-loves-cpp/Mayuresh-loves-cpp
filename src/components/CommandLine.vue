@@ -3,7 +3,7 @@
     <!-- for mobile layout -->
     <div v-if="mobileLayout">
       <span v-show="showCommandInputLine" class="commandline-input"
-        >[{{ cwd == "/home/mayuresh" ? "~" : cwd }}] >
+        >[{{ displayCwd }}] >
       </span>
       <pre v-if="output != null" class="commandline-output">{{
         output.stdout
@@ -13,7 +13,7 @@
     <!-- for desktop layout -->
     <div v-else>
       <span v-show="showCommandInputLine" class="commandline-input"
-        >[{{ cwd == "/home/mayuresh" ? "~" : cwd }}] > {{ command }}{{ cursor }}
+        >[{{ displayCwd }}] > {{ command }}{{ cursor }}
       </span>
       <pre
         v-if="output != null && !hasCustomOutput"
@@ -33,10 +33,11 @@
 
 <script setup>
 import { envStore } from "../store/main.store.js";
+import { ref, watch } from "vue";
 
 const dataStore = envStore();
 
-defineProps({
+const commandLineProps = defineProps({
   cwd: {
     type: String,
   },
@@ -66,6 +67,20 @@ defineProps({
     default: false,
   },
 });
+function formatCwdForDisplay(cwd) {
+  console.log("home directory", dataStore.getHomeDir.value);
+  console.log("current working directory", cwd);
+  return cwd.replace(dataStore.getHomeDir.value, "~");
+}
+
+var displayCwd = ref(formatCwdForDisplay(commandLineProps.cwd));
+
+watch(
+  () => commandLineProps.cwd,
+  (newCwd) => {
+    displayCwd.value = formatCwdForDisplay(newCwd);
+  },
+);
 </script>
 
 <style scoped>

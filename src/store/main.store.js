@@ -37,14 +37,17 @@ export const envStore = defineStore("env", () => {
 
   // env vars
   const pwd = ref("/home/mayuresh");
+  const homeDir = ref("/home/mayuresh");
   const debugMode = ref(true);
   const commandHistory = ref([]);
 
   // getter methods
   const getPWD = computed(() => pwd);
+  const getHomeDir = computed(() => homeDir);
 
   // default exec functions
   function setToDefaultDir() {
+    console.log("setting to default dir");
     pwd.value = "/home/mayuresh";
   }
 
@@ -57,13 +60,17 @@ export const envStore = defineStore("env", () => {
     let pathQueue = null;
 
     if (relativeArgPath[0] == "/") {
+      console.log("absolute path given");
       // indicates path given is absolute
       let parsedPath = relativeArgPath.slice(1);
       pathQueue = parsedPath.split("/");
       console.log("parsed path queue", pathQueue);
     } else {
-      let parsedPath = pwd.value.slice(1) + "/" + relativeArgPath;
+      console.log("relative path given");
+      let parsedPath = pwd.value == "/" ? relativeArgPath : pwd.value.slice(1) + "/" + relativeArgPath;
+      console.log("parsed path", parsedPath);
       pathQueue = parsedPath.split("/");
+      // pathQueue[0] = "/";
       console.log("parsed path queue", pathQueue);
     }
 
@@ -94,7 +101,9 @@ export const envStore = defineStore("env", () => {
         }
       }
     }
-    return "/" + returnFullPathIfDirectoryExists();
+    var returnFullPath = returnFullPathIfDirectoryExists();
+    console.log("full path", returnFullPath);
+    return "/" + returnFullPath;
   }
 
   function cdToParentDirtectory() {
@@ -119,7 +128,7 @@ export const envStore = defineStore("env", () => {
         if (pathParts.length == 0) {
           pwd.value = "/";
         } else {
-          pwd.value = pathParts.join("/");
+          pwd.value = "/" + pathParts.join("/");
         }
       } else {
         pwd.value = "/";
@@ -182,6 +191,7 @@ export const envStore = defineStore("env", () => {
               pwd.value = "/";
             } else {
               var foundPath = findDirectory(args[0]);
+              // console.log("found path", foundPath, "args", args[0]);
               if (foundPath.includes(args[0])) {
                 pwd.value = foundPath;
                 // return null;
@@ -208,8 +218,9 @@ export const envStore = defineStore("env", () => {
       exec: function (args) {
         let output = "";
         for (let i in commandHistory.value) {
-          output = output + i + " " + commandHistory.value[i] + "\n";
+          output = output + (parseInt(i) + 1) + " " + commandHistory.value[i] + "\n";
         }
+        output = output + (commandHistory.value.length + 1) + " history" + "\n";
         // return commandHistory.value.join("\n") + "\nhistory";
         return output;
       },
@@ -328,6 +339,7 @@ export const envStore = defineStore("env", () => {
 
     // getters
     getPWD,
+    getHomeDir,
 
     // methods
     setToDefaultDir,

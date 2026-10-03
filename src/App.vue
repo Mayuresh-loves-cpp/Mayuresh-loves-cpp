@@ -31,6 +31,7 @@
 <script setup>
 import Shell from "./components/Shell.vue";
 import { Toast } from "primevue";
+import Avatar from "primevue/avatar";
 
 console.log(navigator.userAgent);
 const regExForMobileDevices =
